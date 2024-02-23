@@ -1019,7 +1019,7 @@ fig = px.choropleth(country_data, locations='iso_alpha', color=selected_metric, 
 fig.update_layout(geo=dict(showframe=False))
 st.plotly_chart(fig)
 
-st.table(country_data)
+# st.table(country_data)
 
 st.session_state.saved_visualizations = st.session_state.get('saved_visualizations', [])
 
