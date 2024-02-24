@@ -937,10 +937,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 import uuid
-# import base64
-# import kaleido
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import pycountry
 
 def load_data(url):
@@ -1020,7 +1020,33 @@ fig.update_layout(geo=dict(showframe=False))
 st.plotly_chart(fig)
 
 # st.table(country_data)
+selected_country = st.sidebar.selectbox('Select a country:', sorted(data['location'].unique()))
 
+# Filter the data for the selected country
+country_data = data[data['location'] == selected_country]
+
+# Ensure 'date' column is in datetime format
+country_data['date'] = pd.to_datetime(country_data['date'])
+
+# Prepare your data
+events = country_data[['date', 'total_cases']].dropna()
+events['total_cases'] = events['total_cases'].astype(int)  # Convert to int for better readability
+events['event'] = events['date'].dt.strftime('%Y-%m-%d') + ': ' + events['total_cases'].astype(str) + ' cases'
+
+# Create a scatter plot with dates on the y-axis and a fixed x-axis
+fig = go.Figure(data=go.Scatter(x=[1]*len(events), y=events['date'], mode='markers'))
+
+# Add annotations for each event
+for i, event in events.iterrows():
+    fig.add_annotation(x=1, y=event['date'], text=event['event'], showarrow=True, arrowhead=1, ax=-50 if i%2==0 else 50, ay=0)
+
+# Customize the plot
+fig.update_layout(xaxis={'visible': False, 'showticklabels': False}, yaxis={'tickformat': '%b %Y'})
+
+# Display the plot in Streamlit
+st.plotly_chart(fig)
+
+#
 st.session_state.saved_visualizations = st.session_state.get('saved_visualizations', [])
 
 if st.button('Save visualization'):
