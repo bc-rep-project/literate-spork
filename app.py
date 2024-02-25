@@ -135,21 +135,21 @@ st.plotly_chart(fig)
 # st.plotly_chart(fig)
 
 #
-st.session_state.saved_visualizations = st.session_state.get('saved_visualizations', [])
+# st.session_state.saved_visualizations = st.session_state.get('saved_visualizations', [])
 
-if st.button('Save visualization'):
-    st.session_state.saved_visualizations.append(fig)
+# if st.button('Save visualization'):
+#     st.session_state.saved_visualizations.append(fig)
 
-if st.session_state.saved_visualizations:
-    st.write('**Saved visualizations:**')
-    for i, visualization in enumerate(st.session_state.saved_visualizations):
-        st.plotly_chart(visualization)
+# if st.session_state.saved_visualizations:
+#     st.write('**Saved visualizations:**')
+#     for i, visualization in enumerate(st.session_state.saved_visualizations):
+#         st.plotly_chart(visualization)
 
-share_link = st.empty()
-if st.button('Share visualization'):
-    visualization_id = str(uuid.uuid4())
-    share_link.markdown(f'Share this link to share the visualization: {st.session_state.share_url}/{visualization_id}')
-    st.session_state.saved_visualizations[visualization_id] = fig
+# share_link = st.empty()
+# if st.button('Share visualization'):
+#     visualization_id = str(uuid.uuid4())
+#     share_link.markdown(f'Share this link to share the visualization: {st.session_state.share_url}/{visualization_id}')
+#     st.session_state.saved_visualizations[visualization_id] = fig
 
 #
 
