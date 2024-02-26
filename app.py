@@ -4,9 +4,9 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import uuid
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+# import uuid
+# import matplotlib.pyplot as plt
+# import matplotlib.dates as mdates
 import pycountry
 
 def load_data(url):
@@ -29,6 +29,8 @@ def get_iso3_code(country_name):
     except:
         return None
 
+
+
 url = 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
 data = load_data(url)
 
@@ -37,6 +39,8 @@ data['iso_alpha'] = data['location'].apply(get_iso3_code)
 
 if data is not None:
     st.title('**COVID-19 Dashboard**')    
+
+
 
 side_bar = st.sidebar
 
