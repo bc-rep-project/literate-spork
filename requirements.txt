@@ -3,3 +3,4 @@ pandas==2.2.0
 numpy==1.26.4
 plotly==5.18.0
 pycountry==23.12.11
+kaleido==0.2.1

@@ -1,13 +1,11 @@
-#-----------------7th------------------
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-# import uuid
-# import matplotlib.pyplot as plt
-# import matplotlib.dates as mdates
 import pycountry
+import io
+import plotly.io as pio
 
 def load_data(url):
     try:
@@ -44,11 +42,6 @@ if data is not None:
 
 side_bar = st.sidebar
 
-# with side_bar.expander('Country Settings', expanded=False):
-#     selected_countries = side_bar.multiselect(
-#         'Select countries:',
-#         options=sorted(data['location'].unique())
-#     )
 continents = ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania', 'South America']
 
 # Filter out the names of continents from the 'location' column
@@ -117,48 +110,6 @@ fig = px.choropleth(country_data, locations='iso_alpha', hover_name='location', 
 fig.update_layout(geo=dict(showframe=False))
 st.plotly_chart(fig)
 
-# st.table(country_data)
-# selected_country = st.sidebar.selectbox('Select a country:', sorted(data['location'].unique()))
-
-# # Filter the data for the selected country
-# country_data = data[data['location'] == selected_country]
-
-# # Ensure 'date' column is in datetime format
-# country_data['date'] = pd.to_datetime(country_data['date'])
-
-# # Create a filled line graph
-# fig = go.Figure()
-# fig.add_trace(go.Scatter(x=country_data['date'], y=country_data['total_cases'], fill='tozeroy', mode='none', name='Total Cases'))
-# fig.add_trace(go.Scatter(x=country_data['date'], y=country_data['total_deaths'], fill='tozeroy', mode='none', name='Total Deaths'))
-# # fig.add_trace(go.Scatter(x=country_data['date'], y=country_data['total_recoveries'], fill='tozeroy', mode='none', name='Total Recoveries'))  # Replace 'total_recoveries' with the correct column name for recoveries in your dataset
-
-# # Customize the layout
-# fig.update_layout(title='Covid Evolution', xaxis_title='Date', yaxis_title='Count')
-
-# # Display the plot in Streamlit
-# st.plotly_chart(fig)
-
-#
-# st.session_state.saved_visualizations = st.session_state.get('saved_visualizations', [])
-
-# if st.button('Save visualization'):
-#     st.session_state.saved_visualizations.append(fig)
-
-# if st.session_state.saved_visualizations:
-#     st.write('**Saved visualizations:**')
-#     for i, visualization in enumerate(st.session_state.saved_visualizations):
-#         st.plotly_chart(visualization)
-
-# share_link = st.empty()
-# if st.button('Share visualization'):
-#     visualization_id = str(uuid.uuid4())
-#     share_link.markdown(f'Share this link to share the visualization: {st.session_state.share_url}/{visualization_id}')
-#     st.session_state.saved_visualizations[visualization_id] = fig
-
-#
-
-#
-
 fig = px.scatter(country_data, x=selected_metric, y='total_deaths', color='location')
 fig.update_layout(title=f'{selected_metric.capitalize()} vs. Total Deaths', xaxis_title=selected_metric.capitalize(), yaxis_title='Total Deaths')
 st.plotly_chart(fig)
@@ -171,43 +122,18 @@ fig = px.box(country_data, x='continent', y=selected_metric, color='location')
 fig.update_layout(title=f'Box plot of {selected_metric.capitalize()} by continent')
 st.plotly_chart(fig)
 
-# fig = px.scatter_geo(country_data, locations='iso_alpha', color=selected_metric, hover_name='location', size=selected_metric, projection='natural earth', color_continuous_scale=px.colors.sequential.Plasma)
-# fig.update_geos(showcountries=True, showcoastlines=True, showland=True, landcolor="lightgray", lakecolor="white", oceancolor="azure", countrycolor="darkgray")
-# fig.update_layout(title=f'Map of {selected_metric.capitalize()}', geo=dict(showframe=False))
-# st.plotly_chart(fig)
-# selected_country = st.sidebar.selectbox('Select a country:', sorted(data['location'].unique()))
-
-# # Filter the data for the selected country
-# country_data = data[data['location'] == selected_country]
-
-# # Ensure 'date' column is in datetime format
-# country_data['date'] = pd.to_datetime(country_data['date'])
-
-# # Create a combo chart
-# fig = go.Figure(data=[
-#     go.Bar(name='Total Cases', x=country_data['date'], y=country_data['total_cases']),
-#     go.Scatter(name='Total Deaths', x=country_data['date'], y=country_data['total_deaths'], yaxis='y2')
-# ])
-
-# # Customize the layout
-# fig.update_layout(
-#     title='Total Cases and Deaths Over Time',
-#     xaxis=dict(domain=[0.3, 0.7]),
-#     yaxis=dict(title='Total Cases'),
-#     yaxis2=dict(title='Total Deaths', overlaying='y', side='right')
-# )
-
-# # Display the plot in Streamlit
-# st.plotly_chart(fig)
-
 selected_date_data = country_data[country_data['date'] == start_date]
 
-# fig = px.choropleth(selected_date_data, locations='iso_alpha', color=selected_metric, scope='world', title=f'{selected_metric.capitalize()} on {start_date}')
-# fig.update_layout(geo=dict(showframe=False))
-# st.plotly_chart(fig)
-
+# if st.button('Export plot as PNG', key='export_plot'):
+#     fig.write_image("plot.png")
 if st.button('Export plot as PNG', key='export_plot'):
-    fig.write_image("plot.png")
+    img_bytes = pio.to_image(fig, format="png")
+    st.download_button(
+        label="Download plot as PNG",
+        data=io.BytesIO(img_bytes),
+        file_name='plot.png',
+        mime='image/png'
+    )
 
 fig = px.sunburst(country_data, path=['continent', 'location'], values=selected_metric, color='continent', title=f'Sunburst chart of {selected_metric.capitalize()} by country and continent')
 st.plotly_chart(fig)
